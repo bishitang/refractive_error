@@ -84,9 +84,9 @@ print("柱镜度数误差比例：")
 print(CYL_persent)
 
 
-
-# 清空文件内容
+#
+# # 清空文件内容
+# open(SPH_path, 'w').close()
+# open(CYL_path, 'w').close()
+# open(error_eye_path, 'w').close()
 open(SPH_path, 'w').close()
-open(CYL_path, 'w').close()
-open(error_eye_path, 'w').close()
-
