@@ -78,6 +78,7 @@ class Trainer:
                         val_loss += loss.item()
                         for j in range(len(out)):
                             val_all += 1
+                            #轴位为1维
                             ax = abs(out[j] - labels[j])
                             if ax <= 5:
                                 val_acc += 1
@@ -93,7 +94,7 @@ class Trainer:
                     torch.save(self.net.state_dict(), save_path_acc)
                     self.save_top_models(val_acc, save_path_acc)
 
-                    # print("val_acc model_copy is saved !")
+                    print("val_acc model_copy is saved !")
 
 if __name__ == '__main__':
     t = Trainer(r"D:\shishai\NIRDatasets\datasets\dataset", r'D:\shishai\model\ghostnet\params/model1_0_0.244140625_459.7992205619812.plt', r'./params/model1_{}_{}_{}.plt', img_save_path=r'D:\shishai\UNet\train_img')
