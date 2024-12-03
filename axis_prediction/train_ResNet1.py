@@ -1,6 +1,7 @@
 from datetime import datetime
 import os
-from model import ghostnet
+# from model import ghostnet
+from model_resnet import RetNet18
 import torch
 import datasets_gray
 import torch.nn as nn
@@ -16,7 +17,7 @@ class Trainer:
         self.model_copy = model_copy
         self.img_save_path = img_save_path
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.net = ghostnet().to(self.device)
+        self.net = RetNet18().to(self.device)
         self.opt = torch.optim.Adam(self.net.parameters(), lr=0.00001, weight_decay=0.0001)
         # self.lr_scheduler = torch.optim.lr_scheduler.StepLR(self.opt, step_size=500, gamma=0.1, last_epoch=-1)
         self.loss_func = nn.SmoothL1Loss()
@@ -47,7 +48,7 @@ class Trainer:
     # 训练
     def train(self, stop_value):
         current_time = datetime.now().strftime('%b%d_%H-%M-%S')
-        log_dir = os.path.join("./logs/ghostnet_axis/", current_time)
+        log_dir = os.path.join("./logs/resnet_axis/", current_time)
         self.writer = SummaryWriter(log_dir=log_dir)
 
         for epoch in range(1, stop_value + 1):
@@ -89,7 +90,7 @@ class Trainer:
                     self.writer.add_scalar("acc/val_acc", val_acc, epoch)
 
                     # 保存准确率最高的三个模型
-                    save_path_acc = r'D:\shishai\model\GHost\params/ghostnet_axis_val_acc_{:.3f}_{:.3f}_epoch{}.plt'.format(
+                    save_path_acc = r'D:\shishai\model\GHost\params_resnet/resnet_axis_val_acc_{:.3f}_{:.3f}_epoch{}.plt'.format(
                         val_acc, val_loss / (len(self.val_dataset)), epoch)
                     torch.save(self.net.state_dict(), save_path_acc)
                     self.save_top_models(val_acc, save_path_acc)
