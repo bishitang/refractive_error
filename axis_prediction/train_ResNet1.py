@@ -90,7 +90,7 @@ class Trainer:
                     self.writer.add_scalar("acc/val_acc", val_acc, epoch)
 
                     # 保存准确率最高的三个模型
-                    save_path_acc = r'D:\shishai\model\GHost\params_resnet/resnet_axis_val_acc_{:.3f}_{:.3f}_epoch{}.plt'.format(
+                    save_path_acc = r'D:\shishai\model\github\refractive_error\axis_prediction\params_resnet/resnet_axis_val_acc_{:.3f}_{:.3f}_epoch{}.plt'.format(
                         val_acc, val_loss / (len(self.val_dataset)), epoch)
                     torch.save(self.net.state_dict(), save_path_acc)
                     self.save_top_models(val_acc, save_path_acc)
