@@ -207,6 +207,8 @@ class GhostNet(nn.Module):
         if self.dropout > 0.:
             x = F.dropout(x, p=self.dropout, training=self.training)
         x = self.classifier(x)    # 最后的输出层并不包含激活函数，直接就是全链接的输出，在损失函数中包含softmax操作，实际使用需要自己再加一个softmax
+        # 添加sigmoid函数,将输入归一化到[0，1],模型拟合0，1的值相比（-∞，+∞）的值更为容易
+        x = torch.sigmoid(x)
         return x
 
  
@@ -247,7 +249,8 @@ def ghostnet(**kwargs):
 if __name__=='__main__':
     model = ghostnet()
     model.eval()
-    print(model)
+
     input = torch.randn(1,18,80,80)
     y = model(input)
     print(y.size())
+    print(y)

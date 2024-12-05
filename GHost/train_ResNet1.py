@@ -79,7 +79,7 @@ class Trainer:
                         for j in range(len(out.tolist())):
                             val_all += 1
                             SPH = abs(out.tolist()[j][0] - labels.tolist()[j][0])
-                            if SPH <= 0.5:
+                            if SPH <= 0.02564:
                                 val_acc += 1
                     val_acc /= val_all
 
@@ -88,7 +88,7 @@ class Trainer:
                     self.writer.add_scalar("acc/val_acc", val_acc, epoch)
 
                     # 保存准确率最高的三个模型
-                    save_path_acc = r'D:\shishai\model\GHost\params/ghostnet_gray_val_acc_{:.3f}_{:.3f}_epoch{}.plt'.format(
+                    save_path_acc = r'D:\shishai\model\github\refractive_error\GHost\params/ghostnet_gray_val_acc_{:.3f}_{:.3f}_epoch{}.plt'.format(
                         val_acc, val_loss / (len(self.val_dataset)), epoch)
                     torch.save(self.net.state_dict(), save_path_acc)
                     self.save_top_models(val_acc, save_path_acc)
@@ -97,5 +97,5 @@ class Trainer:
 
 if __name__ == '__main__':
     t = Trainer(r"D:\shishai\NIRDatasets\datasets\dataset", r'D:\shishai\model\ghostnet\params/model1_0_0.244140625_459.7992205619812.plt', r'./params/model1_{}_{}_{}.plt', img_save_path=r'D:\shishai\UNet\train_img')
-    t.train(100000)
+    t.train(1000)
 

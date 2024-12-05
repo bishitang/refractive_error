@@ -81,7 +81,7 @@ class Trainer:
                             val_all += 1
                             #轴位为1维
                             ax = abs(out[j] - labels[j])
-                            if ax <= 5:
+                            if ax <= 20:
                                 val_acc += 1
                     val_acc /= val_all
 

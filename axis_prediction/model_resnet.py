@@ -76,7 +76,7 @@ class RetNet18(nn.Module):
         out = self.avgpool(out)  #512*1*1
         out = out.reshape(x.shape[0], -1)# 1*512
         out = self.fc(out)
-        return out
+        return out*180
 
 
 if __name__ == '__main__':
