@@ -45,15 +45,15 @@ class Tester:
 
 
         print(abs(txt[0] - out[0]))
-        if abs(txt[0] - out[0]) <= 0.0064102564102564:  #0.125
+        if abs(txt[0] - out[0]) <= 0.125:  #0.0064102564102564
             SPH = 1
-        elif abs(txt[0] - out[0]) <= 0.0192307692307692:   #0.375
+        elif abs(txt[0] - out[0]) <= 0.375:   #0.0192307692307692
             SPH = 2
-        elif abs(txt[0] - out[0]) <= 0.0320512820512821:  #0.625
+        elif abs(txt[0] - out[0]) <= 0.625:  #0.0320512820512821
             SPH = 3
-        elif abs(txt[0] - out[0]) <= 0.0448717948717949:   #0.875
+        elif abs(txt[0] - out[0]) <= 0.875:   #0.0448717948717949
             SPH = 4
-        elif abs(txt[0] - out[0]) <= 0.0576923076923077:   #1.125
+        elif abs(txt[0] - out[0]) <= 1.125:   #0.0576923076923077
             SPH = 5
         else:
             SPH = 0
@@ -64,15 +64,15 @@ class Tester:
         f.close()
 
 
-        if abs(txt[1] - out[1]) <= 0.0217391304347826:   #0.125
+        if abs(txt[1] - out[1]) <= 0.125:   #0.0217391304347826
             CYL = 1
-        elif abs(txt[1] - out[1]) <= 0.0652173913043478: #0.375
+        elif abs(txt[1] - out[1]) <= 0.375: #0.0652173913043478
             CYL = 2
-        elif abs(txt[1] - out[1]) <= 0.108695652173913: #0.625
+        elif abs(txt[1] - out[1]) <= 0.625: #0.108695652173913
             CYL = 3
-        elif abs(txt[1] - out[1]) <= 0.1521739130434783: #0.875
+        elif abs(txt[1] - out[1]) <= 0.875: #0.1521739130434783
             CYL = 4
-        elif abs(txt[1] - out[1]) <= 0.1956521739130435: #1.125
+        elif abs(txt[1] - out[1]) <= 1.125: #0.1956521739130435
             CYL = 5
         else:
             CYL = 0
@@ -87,7 +87,7 @@ class Tester:
 
 
         # 判断近视变远视，远视变近视的错误的比例
-        if out[0] < 0.0064102564102564: #-0.125
+        if out[0] < -0.125: #0.0064102564102564
             error_eye = 1
         else:
             error_eye = 0
@@ -103,7 +103,7 @@ if __name__ == '__main__':
 
     f = open(r"D:\shishai\NIRDatasets\datasets\dataset\test.txt", encoding='gbk')
     # 路径改一下
-    t = Tester(r'D:\shishai\model\Ghost\params\ghostnet_gray_val_acc_0.186_0.008_epoch11.plt', r'./model_{}_{}.plt')
+    t = Tester(r'D:\shishai\model\github\refractive_error\GHost\params\ghostnet_gray_val_acc_0.691_0.157_epoch224.plt', r'./model_{}_{}.plt')
     # ghostnet_val_acc_0.688_0.223_epoch77.plt
     # ghostnet_val_acc_0.670_0.219_epoch98.plt
     # ghostnet_val_acc_0.705_0.158_epoch141.plt   81.52 87.04
@@ -124,8 +124,8 @@ if __name__ == '__main__':
             txt.append(line.strip())
         # print("=================================")
         txt = [float(txt[0].split('：')[1]), float(txt[1].split('：')[1]), float(txt[2].split('：')[1])]
-        txt[0] = (txt[0] + 11.75) / 19.5
-        txt[1] = (txt[1] + 5.75) / 5.75
+        # txt[0] = (txt[0] + 11.75) / 19.5
+        # txt[1] = (txt[1] + 5.75) / 5.75
 
         eye_img_list = []
         for i in range(len(os.listdir(person_path))):

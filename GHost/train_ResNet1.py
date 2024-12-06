@@ -79,7 +79,7 @@ class Trainer:
                         for j in range(len(out.tolist())):
                             val_all += 1
                             SPH = abs(out.tolist()[j][0] - labels.tolist()[j][0])
-                            if SPH <= 0.02564:
+                            if SPH <= 0.5:  #0.02564
                                 val_acc += 1
                     val_acc /= val_all
 

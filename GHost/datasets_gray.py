@@ -37,7 +37,7 @@ class Datasets:
             eye_img.append(img)
 
         # 将图像转换为 NumPy 数组并调整形状
-        eye_img = np.array(eye_img).reshape(-1, img.shape[0], img.shape[0])  # (54, 80, 80)
+        eye_img = np.array(eye_img).reshape(-1, img.shape[0], img.shape[0])  # (18, 80, 80)
 
         # 处理瞳孔距离
         with open(label_path, 'r') as f:
@@ -47,8 +47,8 @@ class Datasets:
 
 
         txt = [float(txt[0].split('：')[1]), float(txt[1].split('：')[1])]
-        txt[0] = (txt[0] + 11.75) / 19.5
-        txt[1] = (txt[1] + 5.75) / 5.75
+        # txt[0] = (txt[0] + 11.75) / 19.5
+        # txt[1] = (txt[1] + 5.75) / 5.75
         txt = torch.Tensor(txt)
 
         return eye_img, txt
