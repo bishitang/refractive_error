@@ -19,9 +19,7 @@ class Datasets:
         name_image = self.name[index]
 
         label_path = os.path.join(self.path, 'labels', name_image + ".txt")
-
         img_path = os.path.join(self.path, 'images', name_image)
-
         img_list = os.listdir(img_path)
 
         eye_img_list = []
@@ -32,12 +30,20 @@ class Datasets:
 
         eye_img = []
         for i in eye_img_list:
-            # 修改为读取灰度图像
+            # 读取灰度图像
             img = cv2.imread(os.path.join(img_path, i), cv2.IMREAD_GRAYSCALE)
+            if img is None:
+                raise FileNotFoundError(f"Image not found: {os.path.join(img_path, i)}")
+            # 归一化到 [0, 1]
+            img = img.astype(np.float32) / 255.0
             eye_img.append(img)
 
-        # 将图像转换为 NumPy 数组并调整形状
-        eye_img = np.array(eye_img).reshape(-1, img.shape[0], img.shape[0])  # (18, 80, 80)
+        # 确保所有图像的尺寸一致
+        eye_img = np.array(eye_img)
+        if eye_img.ndim == 3:
+            eye_img = eye_img.reshape(-1, eye_img.shape[1], eye_img.shape[2])  # (18, 80, 80)
+        else:
+            raise ValueError("Unexpected eye_img dimensions")
 
         # 处理瞳孔距离
         with open(label_path, 'r') as f:
@@ -45,14 +51,10 @@ class Datasets:
             for line in f:
                 txt.append(line.strip())
 
-
         txt = [float(txt[0].split('：')[1]), float(txt[1].split('：')[1])]
-        # txt[0] = (txt[0] + 11.75) / 19.5
-        # txt[1] = (txt[1] + 5.75) / 5.75
         txt = torch.Tensor(txt)
 
         return eye_img, txt
-
 
 
 if __name__ == '__main__':
