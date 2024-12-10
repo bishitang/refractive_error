@@ -9,7 +9,7 @@ from torchvision.utils import save_image
 import torchvision
 # from model import ghostnet
 from model_resnet import RetNet18
-from model import ghostnet
+from model_ghostnet import ghostnet
 
 class Tester:
     def __init__(self, model_path, model_copy_path):
@@ -58,15 +58,15 @@ class Tester:
         print(f"Difference (ax): {ax}")
 
         # 分类 AX
-        if ax <= 5:
+        if ax <= 5.0:
             AX = 1
-        elif ax <= 10:
+        elif ax <= 10.0:
             AX = 2
-        elif ax <= 15:
+        elif ax <= 15.0:
             AX = 3
-        elif ax <= 20:
+        elif ax <= 20.0:
             AX = 4
-        elif ax <= 25:
+        elif ax <= 25.0:
             AX = 5
         else:
             AX = 0
@@ -95,7 +95,7 @@ if __name__ == '__main__':
 
     # 初始化 Tester
     t = Tester(
-        model_path=r'D:\shishai\model\github\refractive_error\axis_prediction\params_ghostnet\ghostnet_axis_val_acc_0.311_15.340_epoch7.plt',
+        model_path=r'D:\shishai\model\github\refractive_error\axis_prediction\params_ghostnet\ghostnet_axis10_val_acc_0.598_14.608_epoch13.plt',
         model_copy_path=r'./model_{}_{}.plt'
     )
 
@@ -133,6 +133,7 @@ if __name__ == '__main__':
                 eye_img = []
                 break
 
+            img = img.astype(np.float32) / 255.0
             eye_img.append(img)
 
         if len(eye_img) != 18:

@@ -1,6 +1,6 @@
 import cv2
 import os
-import model
+import model_ghostnet
 import torch
 import torch.nn as nn
 import numpy as np
@@ -8,7 +8,7 @@ from tqdm import tqdm
 from torch.utils.data import DataLoader
 from torchvision.utils import save_image
 import torchvision
-from model import ghostnet
+from model_ghostnet import ghostnet
 
 class Tester:
     def __init__(self, model, model_copy):
@@ -103,7 +103,7 @@ if __name__ == '__main__':
 
     f = open(r"D:\shishai\NIRDatasets\datasets\dataset\test.txt", encoding='gbk')
     # 路径改一下
-    t = Tester(r'D:\shishai\model\Ghost\params\ghostnet_gray_val_acc_0.676_0.169_epoch116.plt', r'./model_{}_{}.plt')
+    t = Tester(r'D:\shishai\model\Ghost\params\ghostnet_axis10_val_acc_0.598_14.608_epoch13.plt', r'./model_{}_{}.plt')
     # ghostnet_val_acc_0.688_0.223_epoch77.plt
     # ghostnet_val_acc_0.670_0.219_epoch98.plt
     # ghostnet_val_acc_0.705_0.158_epoch141.plt   81.52 87.04
@@ -141,6 +141,7 @@ if __name__ == '__main__':
         for i in eye_img_list:
             img = cv2.imread(os.path.join(person_path, i), cv2.IMREAD_GRAYSCALE)
             # img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            img = img.astype(np.float32) / 255.0
             eye_img.append(img)
 
         eye_img = np.array(eye_img).reshape(-1, img.shape[0], img.shape[0])

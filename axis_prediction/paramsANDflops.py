@@ -12,7 +12,7 @@
 
 import torch
 from thop import profile
-from model import ghostnet # 确保导入正确的模型结构
+from model_ghostnet import ghostnet # 确保导入正确的模型结构
 
 # 定义模型路径
 model_path = r'D:\shishai\model\GHost\params\ghostnet_val_acc_0.705_0.158_epoch141.plt'

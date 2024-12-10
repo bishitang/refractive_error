@@ -9,7 +9,7 @@ import time
 from torch.utils.data import Dataset
 from torchvision.utils import save_image
 
-from model import ghostnet
+from model_ghostnet import ghostnet
 
 
 # 简单的数据集，没有进行数据增强

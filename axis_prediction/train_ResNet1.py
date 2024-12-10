@@ -1,7 +1,7 @@
 from datetime import datetime
 import os
 # from model_resnet import RetNet18
-from model import ghostnet
+from model_ghostnet import ghostnet
 import torch
 import datasets_gray
 import torch.nn as nn
@@ -104,19 +104,19 @@ class Trainer:
                             # 计算最小角度差值
                             diff = abs(out[j].item() - labels[j].item())
                             ax = min(diff, 180.0 - diff)
-                            if ax <= 5:
+                            if ax <= 10:
                                 val_acc += 1
                     val_acc /= val_all
 
                     avg_val_loss = val_loss / len(self.val_dataset)
-                    print('val Loss: {:.6f}, ±5° Acc: {:.6f}'.format(avg_val_loss, val_acc))
+                    print('val Loss: {:.6f}, ±10° Acc: {:.6f}'.format(avg_val_loss, val_acc))
                     self.writer.add_scalar("val_loss", avg_val_loss, epoch)
                     self.writer.add_scalar("acc/val_acc", val_acc, epoch)
 
                     # 保存准确率最高的三个模型
                     save_path_acc = os.path.join(
                         'D:/shishai/model/github/refractive_error/axis_prediction/params_ghostnet',
-                        f'ghostnet_axis_val_acc_{val_acc:.3f}_{avg_val_loss:.3f}_epoch{epoch}.plt'
+                        f'ghostnet_axis10_val_acc_{val_acc:.3f}_{avg_val_loss:.3f}_epoch{epoch}.plt'
                     )
                     torch.save(self.net.state_dict(), save_path_acc)
                     self.save_top_models(val_acc, save_path_acc)

@@ -9,7 +9,7 @@ import time
 from torch.utils.data import Dataset
 from torchvision.utils import save_image
 
-from model import ghostnet
+from model_ghostnet import ghostnet
 class Datasets(Dataset):
 
     def __init__(self, name, path, augmentation_flag):
@@ -40,6 +40,7 @@ class Datasets(Dataset):
         for i in eye_img_list:
             # 修改为读取灰度图像
             img = cv2.imread(os.path.join(img_path, i), cv2.IMREAD_GRAYSCALE)
+            img = img.astype(np.float32) / 255.0
             eye_img.append(img)
 
         # 将图像转换为 NumPy 数组并调整形状

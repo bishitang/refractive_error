@@ -2,7 +2,7 @@ import cv2
 import os
 import torch
 import numpy as np
-from model import ghostnet
+from model_ghostnet import ghostnet
 
 # 使用的设备
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
