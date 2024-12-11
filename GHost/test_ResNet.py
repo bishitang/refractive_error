@@ -8,7 +8,10 @@ from tqdm import tqdm
 from torch.utils.data import DataLoader
 from torchvision.utils import save_image
 import torchvision
+
 from model import ghostnet
+from model import ghostnet
+# from model_resnet import RetNet18
 
 class Tester:
     def __init__(self, model, model_copy):
@@ -36,6 +39,7 @@ class Tester:
         self.img = self.img.transpose(2, 0).transpose(1, 2).unsqueeze(0).float()# torch.Size([1, 256, 256])
 
         self.net.eval()
+
         out  = self.net(self.img)
 
 
@@ -103,7 +107,7 @@ if __name__ == '__main__':
 
     f = open(r"D:\shishai\NIRDatasets\datasets\dataset\test.txt", encoding='gbk')
     # 路径改一下
-    t = Tester(r'D:\shishai\model\github\refractive_error\GHost\params\ghostnet_gray_val_acc_0.691_0.157_epoch224.plt', r'./model_{}_{}.plt')
+    t = Tester(r'D:\shishai\model\github\refractive_error\GHost\params_v1\ghostnet_v1_val_acc_0.706_0.153_epoch748.plt', r'./model_{}_{}.plt')
     # ghostnet_val_acc_0.688_0.223_epoch77.plt
     # ghostnet_val_acc_0.670_0.219_epoch98.plt
     # ghostnet_val_acc_0.705_0.158_epoch141.plt   81.52 87.04
@@ -131,13 +135,13 @@ if __name__ == '__main__':
         for i in range(len(os.listdir(person_path))):
             eye_img_list.append(str(i+1) + '.png')
         # eye_img_list = eye_img_list[9:] + eye_img_list[:9]
-        # print(eye_img_list)
         # exit()
 
         eye_img = []
         for i in eye_img_list:
             img = cv2.imread(os.path.join(person_path, i), cv2.IMREAD_GRAYSCALE)
             # img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            img = img.astype(np.float32) / 255.0
             eye_img.append(img)
 
         eye_img = np.array(eye_img).reshape(-1, img.shape[0], img.shape[0])
