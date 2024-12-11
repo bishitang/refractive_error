@@ -1,2 +1,20 @@
 
 axis_prediction/logs/ghostnet_axis/Dec09_16-36-40/events.out.tfevents.1733733400.DESKTOP-7UCA7EJ.83576.0
+GHost/__pycache__/model_resnet.cpython-39.pyc
+GHost/logs/ghostnet_gray/Dec10_17-21-58/events.out.tfevents.1733822518.DESKTOP-7UCA7EJ.18764.0
+GHost/logs/ghostnet_gray/Dec10_20-12-56/events.out.tfevents.1733832776.DESKTOP-7UCA7EJ.20872.0
+GHost/params/ghostnet_gray_val_acc_0.688_0.236_epoch241.plt
+GHost/params/ghostnet_gray_val_acc_0.697_0.233_epoch272.plt
+GHost/params/ghostnet_gray_val_acc_0.697_0.235_epoch268.plt
+GHost/params/ghostnet_v1_val_acc_0.672_0.233_epoch348.plt
+GHost/params/ghostnet_v1_val_acc_0.672_0.234_epoch314.plt
+GHost/params/ghostnet_v1_val_acc_0.672_0.240_epoch230.plt
+GHost/params/resnet_gray_val_acc_0.689_0.156_epoch675.plt
+GHost/params/resnet_gray_val_acc_0.689_0.157_epoch645.plt
+GHost/logs/ghostnet_gray/Dec06_13-17-47/events.out.tfevents.1733462267.DESKTOP-7UCA7EJ.80124.0
+GHost/logs/ghostnet_gray/Dec06_13-17-47/events.out.tfevents.1733462267.DESKTOP-7UCA7EJ.80124.0
+GHost/logs/ghostnet_gray/Dec06_13-17-47/events.out.tfevents.1733462267.DESKTOP-7UCA7EJ.80124.0
+GHost/logs/ghostnet_gray/Dec09_17-05-01/events.out.tfevents.1733735101.DESKTOP-7UCA7EJ.94896.0
+GHost/logs/ghostnet_gray/Dec06_13-17-47/events.out.tfevents.1733462267.DESKTOP-7UCA7EJ.80124.0
+GHost/logs/ghostnet_gray/Dec06_13-17-47/events.out.tfevents.1733462267.DESKTOP-7UCA7EJ.80124.0
+GHost/params/ghostnet_gray_val_acc_0.693_0.148_epoch383.plt
