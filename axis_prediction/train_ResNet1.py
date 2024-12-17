@@ -68,7 +68,7 @@ class Trainer:
     # 训练
     def train(self, stop_value):
         current_time = datetime.now().strftime('%b%d_%H-%M-%S')
-        log_dir = os.path.join("./logs/ghostnet_axis/", current_time)
+        log_dir = os.path.join("./logs/ghostnet_axis10/", current_time)
         self.writer = SummaryWriter(log_dir=log_dir)
 
         for epoch in range(1, stop_value + 1):
@@ -84,7 +84,8 @@ class Trainer:
                 self.opt.step()
             avg_train_loss = loss_sum / len(self.train_dataset)
             print("模型损失：" + str(avg_train_loss))
-            self.writer.add_scalar("train_loss", avg_train_loss, epoch)
+            self.writer.add_scalar("train_loss", avg_train_loss, epoch)\
+            #显示在tensorboard上的是每一批次的平均loss
 
             # 备份
             if epoch % 1 == 0 or epoch == stop_value:
@@ -108,6 +109,11 @@ class Trainer:
                                 val_acc += 1
                     val_acc /= val_all
 
+                    # print(len(self.val_dataset))
+                    # exit()
+
+                    #len(val_dataset)意为val_dataset的批次为33，每一批次batch_size为16
+                    #avg_val_loss为val每一批次的平均loss
                     avg_val_loss = val_loss / len(self.val_dataset)
                     print('val Loss: {:.6f}, ±10° Acc: {:.6f}'.format(avg_val_loss, val_acc))
                     self.writer.add_scalar("val_loss", avg_val_loss, epoch)
@@ -115,7 +121,7 @@ class Trainer:
 
                     # 保存准确率最高的三个模型
                     save_path_acc = os.path.join(
-                        'D:/shishai/model/github/refractive_error/axis_prediction/params_ghostnet',
+                        'D:/shishai/model/github/refractive_error/axis_prediction/params_ghostnet_axis10',
                         f'ghostnet_axis10_val_acc_{val_acc:.3f}_{avg_val_loss:.3f}_epoch{epoch}.plt'
                     )
                     torch.save(self.net.state_dict(), save_path_acc)

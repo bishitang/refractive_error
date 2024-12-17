@@ -207,10 +207,8 @@ class GhostNet(nn.Module):
         x = x.view(x.size(0), -1)
         if self.dropout > 0.:
             x = F.dropout(x, p=self.dropout, training=self.training)
-        x = self.classifier(x)    # 最后的输出层并不包含激活函数，直接就是全链接的输出，在损失函数中包含softmax操作，实际使用需要自己再加一个softmax
-        x = torch.sigmoid(x) * 180  # 将输出限制在 [0, 180]
-
-
+        x = self.classifier(x)
+        x = torch.sigmoid(x) * 180  # (x)保证模型输出为[0,1]，x范围限制在 [0, 180]，进行与label的比较
         return x
  
  
@@ -219,38 +217,39 @@ def ghostnet(**kwargs):
     Constructs a GhostNet model
     """
     cfgs = [
-        # k, t, c, SE, s 
+        # k, t, c, SE, s
         # stage1
-        [[3,  16,  16, 0, 1]],
+        [[3, 16, 16, 0, 1]],
         # stage2
-        [[3,  48,  24, 0, 2]],
-        [[3,  72,  24, 0, 1]],
+        [[3, 48, 24, 0, 2]],
+        [[3, 72, 24, 0, 1]],
         # stage3
-        [[5,  72,  40, 0.25, 2]],
-        [[5, 120,  40, 0.25, 1]],
+        [[5, 72, 40, 0.25, 2]],
+        [[5, 120, 40, 0.25, 1]],
         # stage4
-        [[3, 240,  80, 0, 2]],
-        [[3, 200,  80, 0, 1],
-         [3, 184,  80, 0, 1],
-         [3, 184,  80, 0, 1],
+        [[3, 240, 80, 0, 2]],
+        [[3, 200, 80, 0, 1],
+         [3, 184, 80, 0, 1],
+         [3, 184, 80, 0, 1],
          [3, 480, 112, 0.25, 1],
          [3, 672, 112, 0.25, 1]
-        ],
+         ],
         # stage5
         [[5, 672, 160, 0.25, 2]],
         [[5, 960, 160, 0, 1],
          [5, 960, 160, 0.25, 1],
          [5, 960, 160, 0, 1],
          [5, 960, 160, 0.25, 1]
-        ]
+         ]
     ]
     return GhostNet(cfgs, **kwargs)
- 
- 
-if __name__=='__main__':
+
+
+if __name__ == '__main__':
     model = ghostnet()
     model.eval()
-    print(model)
-    input = torch.randn(1,18,80,80)
+
+    input = torch.randn(1, 18, 80, 80)  # 确保输入通道数为18
     y = model(input)
-    print(y.size())
+    print(y.size())  # 应输出 torch.Size([1, 2])
+    print(y)  # 应输出形如 [[sph, cyl]]
