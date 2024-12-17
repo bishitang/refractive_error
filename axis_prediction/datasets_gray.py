@@ -43,14 +43,18 @@ class Datasets(Dataset):
             img = img.astype(np.float32) / 255.0
             eye_img.append(img)
 
-        # 将图像转换为 NumPy 数组并调整形状
-        eye_img = np.array(eye_img).reshape(-1, img.shape[0], img.shape[0])   # (54, 80, 80)
+        # 确保所有图像的尺寸一致
+        eye_img = np.array(eye_img)
+        if eye_img.ndim == 3:
+            eye_img = eye_img.reshape(-1, eye_img.shape[1], eye_img.shape[2])  # (18, 80, 80)
+        else:
+            raise ValueError("Unexpected eye_img dimensions")
 
-        # 载入轴位标签
-        f = open(label_path)
-        txt = []
-        for line in f:
-            txt.append(line.strip())
+        # 处理瞳孔距离
+        with open(label_path, 'r') as f:
+            txt = []
+            for line in f:
+                txt.append(line.strip())
 
         txt = [float(txt[2].split('：')[1])]
         # txt = [float(txt[0].split('：')[1]), float(txt[1].split('：')[1])]

@@ -40,8 +40,8 @@ class Tester:
             raise TypeError(f"Expected img to be a numpy array, but got {type(img)}")
 
         # 转换为 torch tensor
-        img_tensor = torch.from_numpy(img).float().to(self.device)  # [18, H, W]
-        img_tensor = img_tensor.unsqueeze(0)  # [1, 18, H, W]
+        img_tensor = torch.from_numpy(img).float().to(self.device)  # [18, 80, 80]
+        img_tensor = img_tensor.unsqueeze(0)  # [1, 18, 80, 80]在张量的指定位置添加一个新的维度
 
         self.net.eval()
         with torch.no_grad():
@@ -95,7 +95,7 @@ if __name__ == '__main__':
 
     # 初始化 Tester
     t = Tester(
-        model_path=r'D:\shishai\model\github\refractive_error\axis_prediction\params_ghostnet\ghostnet_axis10_val_acc_0.598_14.608_epoch13.plt',
+        model_path=r'D:\shishai\model\github\refractive_error\axis_prediction\params_ghostnet_axis10\ghostnet_axis10_val_acc_0.583_14.633_epoch10.plt',
         model_copy_path=r'./model_{}_{}.plt'
     )
 

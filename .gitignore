@@ -18,3 +18,6 @@ GHost/logs/ghostnet_gray/Dec09_17-05-01/events.out.tfevents.1733735101.DESKTOP-7
 GHost/logs/ghostnet_gray/Dec06_13-17-47/events.out.tfevents.1733462267.DESKTOP-7UCA7EJ.80124.0
 GHost/logs/ghostnet_gray/Dec06_13-17-47/events.out.tfevents.1733462267.DESKTOP-7UCA7EJ.80124.0
 GHost/params/ghostnet_gray_val_acc_0.693_0.148_epoch383.plt
+axis_prediction/__pycache__/model_ghostnet.cpython-39.pyc
+axis_prediction/__pycache__/datasets_gray.cpython-39.pyc
+axis_prediction/__pycache__/model_ghostnet.cpython-39.pyc
