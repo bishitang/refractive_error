@@ -37,10 +37,13 @@ class Trainer:
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.net = ghostnet().to(self.device)
         self.opt = torch.optim.Adam(self.net.parameters(), lr=0.00001, weight_decay=0.0001)
-        # self.lr_scheduler = torch.optim.lr_scheduler.StepLR(self.opt, step_size=500, gamma=0.1, last_epoch=-1)
+        # self.lr_scheduler = torch.optim.lr_scheduler.StepLR(self.opt, step_size=350, gamma=0.1, last_epoch=-1)
+        # # 在初始化时定义 ReduceLROnPlateau
+        # self.lr_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(self.opt, 'min', patience=50, factor=0.1,
+        #                                                                )
         self.loss_func = AngularSmoothL1Loss(beta=1.0)  # 使用自定义损失函数
         self.top_models = []  # 存储最高准确率的模型
-        self.max_models = 3  # 保持最多3个模型文件
+        self.max_models = 30  # 保持最多3个模型文件
 
         trainset_list = [line.strip() for line in open(os.path.join(path, 'train.txt'), encoding='gbk')]
         valset_list = [line.strip() for line in open(os.path.join(path, 'val.txt'), encoding='gbk')]
@@ -65,6 +68,7 @@ class Trainer:
             _, remove_path = self.top_models.pop(-1)
             os.remove(remove_path)
 
+
     # 训练
     def train(self, stop_value):
         current_time = datetime.now().strftime('%b%d_%H-%M-%S')
@@ -86,6 +90,9 @@ class Trainer:
             print("模型损失：" + str(avg_train_loss))
             self.writer.add_scalar("train_loss", avg_train_loss, epoch)\
             #显示在tensorboard上的是每一批次的平均loss
+            # 更新学习率
+            # self.lr_scheduler.step()  # 学习率更新
+
 
             # 备份
             if epoch % 1 == 0 or epoch == stop_value:

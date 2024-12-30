@@ -95,7 +95,8 @@ if __name__ == '__main__':
 
     # 初始化 Tester
     t = Tester(
-        model_path=r'D:\shishai\model\github\refractive_error\axis_prediction\params_ghostnet_axis10\ghostnet_axis10_val_acc_0.583_14.633_epoch10.plt',
+        model_path=r'D:\shishai\model\github\refractive_error\axis_prediction\params_ghostnet_axis10'
+                   r'\ghostnet_axis10_val_acc_0.509_15.604_epoch201.plt',
         model_copy_path=r'./model_{}_{}.plt'
     )
 

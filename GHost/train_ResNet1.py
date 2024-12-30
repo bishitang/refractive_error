@@ -1,6 +1,6 @@
 from datetime import datetime
 import os
-from model import ghostnet
+from model_Ghost2 import ghostnetv2
 # from model_resnet import RetNet18
 import torch
 import datasets_gray
@@ -17,7 +17,7 @@ class Trainer:
         self.model_copy = model_copy
         self.img_save_path = img_save_path
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.net = ghostnet().to(self.device)
+        self.net = model = ghostnetv2(num_classes=2, width=1.0, dropout=0.2, args=None, input_channels=18).to(self.device)
         # self.net = RetNet18().to(self.device)
         self.opt = torch.optim.Adam(self.net.parameters(), lr=0.00001, weight_decay=0.0001)
         # self.lr_scheduler = torch.optim.lr_scheduler.StepLR(self.opt, step_size=500, gamma=0.1, last_epoch=-1)
@@ -49,7 +49,7 @@ class Trainer:
     # 训练
     def train(self, stop_value):
         current_time = datetime.now().strftime('%b%d_%H-%M-%S')
-        log_dir = os.path.join("./logs/ghostnet_v1/", current_time)
+        log_dir = os.path.join("./logs/ghostnet_v2/", current_time)
         self.writer = SummaryWriter(log_dir=log_dir)
 
         for epoch in range(1, stop_value + 1):
@@ -76,6 +76,7 @@ class Trainer:
                     val_all = 0
                     for inputs, labels in tqdm(self.val_dataset, desc=f"epoch{epoch}(val)", unit="batch"):
                         inputs, labels = inputs.float().to(self.device), labels.to(self.device)
+                        #
                         out = self.net(inputs)
                         loss = self.loss_func(out, labels)
                         val_loss += loss.item()
@@ -93,8 +94,8 @@ class Trainer:
 
                     # 保存准确率最高的三个模型
                     save_path_acc = os.path.join(
-                        r'D:\shishai\model\github\refractive_error\GHost\params_v1',
-                        f'ghostnet_v1_val_acc_{val_acc:.3f}_{avg_val_loss:.3f}_epoch{epoch}.plt'
+                        r'D:\shishai\model\github\refractive_error\GHost\params_Ghostv2',
+                        f'ghostnet_v2_val_acc_{val_acc:.3f}_{avg_val_loss:.3f}_epoch{epoch}.plt'
                     )
                     torch.save(self.net.state_dict(), save_path_acc)
                     self.save_top_models(val_acc, save_path_acc)
