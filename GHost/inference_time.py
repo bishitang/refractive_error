@@ -5,7 +5,8 @@ import cv2
 import numpy as np
 import torch
 import torch.nn as nn
-from model import ghostnet  # 确保 'model.py' 中定义了 'ghostnet' 类
+from model import ghostnet
+
 
 
 def cal_time(model, x, iterations=50, warmup=5):
@@ -61,7 +62,7 @@ def load_model(model_path, device):
     return model
 
 
-def preprocess_image(image_path, channels=1, target_size=(80, 80)):
+def preprocess_image(image_path, channels=1):
     """
     读取和预处理单张图像。
 
@@ -77,7 +78,7 @@ def preprocess_image(image_path, channels=1, target_size=(80, 80)):
     if img is None:
         raise ValueError(f"Unable to read image at {image_path}")
     # 调整图像大小
-    img = cv2.resize(img, target_size)
+
     img = img.astype(np.float32) / 255.0  # 归一化到 [0, 1]
     if channels == 1:
         img = np.expand_dims(img, axis=0)  # 形状: [1, H, W]
@@ -91,7 +92,8 @@ def preprocess_image(image_path, channels=1, target_size=(80, 80)):
 def main():
     # 配置
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    model_path = r'D:\shishai\model\github\refractive_error\GHost\params_v1\ghostnet_v1_val_acc_0.706_0.153_epoch748.plt'
+    model_path = (r'D:\shishai\model\github\refractive_error\GHost\params_v1'
+                  r'\ghostnet_v1_val_acc_0.706_0.153_epoch748.plt')
     images_dir = r"D:\shishai\NIRDatasets\datasets\dataset/images"
     test_txt_path = r"D:\shishai\NIRDatasets\datasets\dataset\test.txt"
     expected_channels = 1  # 根据模型要求调整（1 或 3）
@@ -129,7 +131,7 @@ def main():
         for img_name in eye_img_list:
             img_path = os.path.join(person_path, img_name)
             try:
-                img_tensor = preprocess_image(img_path, channels=expected_channels, target_size=target_image_size)
+                img_tensor = preprocess_image(img_path, channels=expected_channels)
                 eye_img_tensors.append(img_tensor)
             except ValueError as ve:
                 print(f"Warning: {ve}. Skipping this image.")

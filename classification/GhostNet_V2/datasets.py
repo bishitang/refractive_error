@@ -1,15 +1,31 @@
 import os
 import cv2
+import torchvision
 import numpy as np
+import random
 import torch
+import imutils
+import time
+from torch.utils.data import Dataset
+from torchvision.utils import save_image
 
 
-class Datasets:
+
+# 简单的数据集，没有进行数据增强
+class Datasets(Dataset):
 
     def __init__(self, name, path, augmentation_flag):
+        # 做标签
         self.path = path
         self.name = name
         self.augmentation_flag = augmentation_flag
+
+        self.trans_crop = torchvision.transforms.Compose([
+                                                          torchvision.transforms.RandomCrop(64)
+                                                     ])
+        # 定义了一个包含颜色抖动（亮度、对比度、饱和度、色调）的转换
+        self.trans_img = torchvision.transforms.Compose([torchvision.transforms.ColorJitter(brightness=0.5, contrast=0.5, saturation=0.5, hue=0.5)
+                                                     ])
 
     def __len__(self):
         return len(self.name)
@@ -24,7 +40,7 @@ class Datasets:
 
         eye_img_list = []
         for i in img_list:
-            eye_img_list.append(i)
+                eye_img_list.append(i)
 
         eye_img_list = eye_img_list[:1] + eye_img_list[10:] + eye_img_list[1:10]
 
@@ -45,7 +61,6 @@ class Datasets:
         else:
             raise ValueError("Unexpected eye_img dimensions")
 
-
         with open(label_path, 'r') as f:
             txt = []
             for line in f:
@@ -54,7 +69,37 @@ class Datasets:
         txt = [float(txt[0].split('：')[1]), float(txt[1].split('：')[1])]
         txt = torch.Tensor(txt)
 
-        return eye_img, txt
+        if txt[1] % 0.5 == 0.25:
+            txt_SE = txt[0] + (txt[1] - 0.25) * 0.5
+        elif txt[1] % 0.5 == 0.0:
+            txt_SE = txt[0] + txt[1] * 0.5
+
+        if txt_SE < -6:
+            txt_SE_cls = 0
+        elif txt_SE >= -6 and txt_SE < -3:
+            txt_SE_cls = 1
+        elif txt_SE >= -3 and txt_SE < -0.5:
+            txt_SE_cls = 2
+        elif txt_SE >= -0.5 and txt_SE <= 0.5:
+            txt_SE_cls = 3
+        elif txt_SE > 0.5 and txt_SE <= 3:
+            txt_SE_cls = 4
+        elif txt_SE > 3 and txt_SE <= 5:
+            txt_SE_cls = 5
+        elif txt_SE > 5:
+            txt_SE_cls = 6
+        else:
+            print("dataset数据集类别有问题！！")
+            exit()
+
+
+
+        # txt[2] = txt[2]/90 *10-5
+        label = torch.Tensor([txt_SE_cls])
+
+
+        return eye_img, label
+
 
 
 if __name__ == '__main__':
@@ -67,43 +112,3 @@ if __name__ == '__main__':
             trainset_list.append(line.strip())
 
     dataset = Datasets(trainset_list, r"D:\shishai\NIRDatasets\datasets\dataset", False)
-
-    # 初始化最小值和最大值
-    min_value_sph = float('inf')
-    max_value_sph = float('-inf')
-    min_value_cyl = float('inf')
-    max_value_cyl = float('-inf')
-
-    # 初始化对应的行号
-    min_row_sph = None
-    max_row_sph = None
-    min_row_cyl = None
-    max_row_cyl = None
-
-    # 遍历所有数据
-    for idx, txt in enumerate(dataset):
-        # 为什么不是txt【0】，txt【1】，因为tensor数据类型为元组，
-        # 只有txt[1，0]，txt[1,1]才是度数，前面数据为设备信息等tensor格式
-        sph = txt[1][0].item()
-        cyl = txt[1][1].item()  #
-
-        # 计算 sph 的最小值和最大值
-        if sph < min_value_sph:
-            min_value_sph = sph
-            min_row_sph = trainset_list[idx]
-        if sph > max_value_sph:
-            max_value_sph = sph
-            max_row_sph = trainset_list[idx]
-
-        # 计算 cyl 的最小值和最大值
-        if cyl < min_value_cyl:
-            min_value_cyl = cyl
-            min_row_cyl = trainset_list[idx]
-        if cyl > max_value_cyl:
-            max_value_cyl = cyl
-            max_row_cyl = trainset_list[idx]
-
-    print(f"sph最小值: {min_value_sph}，对应行: {min_row_sph}")
-    print(f"sph最大值: {max_value_sph}，对应行: {max_row_sph}")
-    print(f"cyl最小值: {min_value_cyl}，对应行: {min_row_cyl}")
-    print(f"cyl最大值: {max_value_cyl}，对应行: {max_row_cyl}")

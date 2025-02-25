@@ -1,14 +1,18 @@
-from datetime import datetime
+"""
+训练器模块
+"""
 import os
-# from model_Ghost2 import ghostnetv2
-from model_ghostnet3 import ghostnetv3
-from model_resnet import RetNet18
+from model import RetNet18
+from model_MobileNet_V3 import MobileNetV3_Large
 import torch
-import datasets_gray
+import datasets
 import torch.nn as nn
-from torch.utils.tensorboard import SummaryWriter
+from datetime import datetime
 from tqdm import tqdm
 from torch.utils.data import DataLoader
+from torch.utils.tensorboard import SummaryWriter
+
+
 
 # 训练器
 class Trainer:
@@ -18,19 +22,21 @@ class Trainer:
         self.model_copy = model_copy
         self.img_save_path = img_save_path
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        # self.net = model = ghostnetv2(num_classes=2, width=1.0, dropout=0.2, args=None, input_channels=18).to(self.device)
-        self.net = ghostnetv3(width=1.0).to(self.device)
+        self.net = RetNet18().to(self.device)
         self.opt = torch.optim.Adam(self.net.parameters(), lr=0.00001, weight_decay=0.0001)
-        # self.lr_scheduler = torch.optim.lr_scheduler.StepLR(self.opt, step_size=500, gamma=0.1, last_epoch=-1)
-        self.loss_func = nn.SmoothL1Loss()
+        self.lr_scheduler = torch.optim.lr_scheduler.StepLR(self.opt, step_size=500, gamma=0.1, last_epoch=-1)
+        # self.loss_func = nn.SmoothL1Loss()
+        self.loss_func = nn.CrossEntropyLoss()
         self.top_models = []  # 存储最高准确率的模型
-        self.max_models = 3   # 保持最多3个模型文件
+        self.max_models = 3  # 保持最多3个模型文件
 
         trainset_list = [line.strip() for line in open(os.path.join(path, 'train.txt'), encoding='gbk')]
         valset_list = [line.strip() for line in open(os.path.join(path, 'val.txt'), encoding='gbk')]
 
-        self.train_dataset = DataLoader(datasets_gray.Datasets(trainset_list, path, True), batch_size=16, shuffle=True, num_workers=0)
-        self.val_dataset = DataLoader(datasets_gray.Datasets(valset_list, path, False), batch_size=16, shuffle=False, num_workers=0)
+        self.train_dataset = DataLoader(datasets.Datasets(trainset_list, path, True), batch_size=16, shuffle=True,
+                                        num_workers=0)
+        self.val_dataset = DataLoader(datasets.Datasets(valset_list, path, False), batch_size=16, shuffle=False,
+                                      num_workers=0)
 
         if os.path.exists(self.model):
             self.net.load_state_dict(torch.load(self.model, map_location=self.device))
@@ -50,15 +56,21 @@ class Trainer:
     # 训练
     def train(self, stop_value):
         current_time = datetime.now().strftime('%b%d_%H-%M-%S')
-        log_dir = os.path.join("./logs/ghostnet_v3/", current_time)
+        log_dir = os.path.join("./logs/resnet/", current_time)
         self.writer = SummaryWriter(log_dir=log_dir)
-
         for epoch in range(1, stop_value + 1):
+            self.net.train()
             loss_sum = 0.
             for inputs, labels in tqdm(self.train_dataset, desc=f"epoch{epoch}(train)", unit="batch"):
+                # label为载入batch为16的类别标签
+                # input为载入batch为16的图片，16*18*80*80
                 inputs, labels = inputs.float().to(self.device), labels.to(self.device)
+                # out为模型输出的batch为16的1*1的类别logits
                 out = self.net(inputs)
-                loss = self.loss_func(out, labels)
+
+
+                # labels[:, 0]将labels [3.],[2.],[1.]转为[3，2，1]；long()将其转为int64方便进行交叉熵损失计算
+                loss = self.loss_func(out, labels[:, 0].long())
                 loss_sum += loss.item()
                 self.opt.zero_grad()
                 loss.backward()
@@ -67,9 +79,16 @@ class Trainer:
             print("模型损失：" + str(avg_train_loss))
             self.writer.add_scalar("train_loss", avg_train_loss, epoch)
 
+            # if epoch % 20 == 0:
+            # out[0]为16*7的第一个1*7数据，torch.argmax返回最大值的索引
+            # 对比模型预测和标签
+            #     print("网络输出视力：" + str(torch.argmax(out[0]).item()))
+            #     print("真实视力：" + str(labels[0].item()))
+            #     print(f"\nEpoch: {epoch}/{stop_value}, Loss: {loss}")
+
             # 备份
             if epoch % 1 == 0 or epoch == stop_value:
-                self.net.eval()
+                self.net.eval()  # 模型评估
                 print('\n\n验证集验证结果：')
                 with torch.no_grad():
                     val_loss = 0
@@ -77,38 +96,41 @@ class Trainer:
                     val_all = 0
                     for inputs, labels in tqdm(self.val_dataset, desc=f"epoch{epoch}(val)", unit="batch"):
                         inputs, labels = inputs.float().to(self.device), labels.to(self.device)
-                        #
+                        # 输出生成的图像
                         out = self.net(inputs)
-                        loss = self.loss_func(out, labels)
+
+                        loss = self.loss_func(out, labels[:, 0].long())
                         val_loss += loss.item()
+
                         for j in range(len(out.tolist())):
                             val_all += 1
-                            SPH = abs(out.tolist()[j][0] - labels.tolist()[j][0])
-                            if SPH <= 0.5:  #0.02564
+                            out_acc = torch.argmax(out[j], dim=0)
+                            if out_acc == labels[j][0]:
                                 val_acc += 1
                     val_acc /= val_all
-
                     avg_val_loss = val_loss / len(self.val_dataset)
                     print('val Loss: {:.6f},    ±0.5 Acc: {:.6f}'.format(avg_val_loss, val_acc))
                     self.writer.add_scalar("val_loss", avg_val_loss, epoch)
                     self.writer.add_scalar("acc/val_acc", val_acc, epoch)
 
+                    print("网络输出视力：" + str(torch.argmax(out[0]).item()))
+                    print("真实视力：" + str(labels[0].item()))
+
                     # 保存准确率最高的三个模型
                     save_path_acc = os.path.join(
-                        r'D:\shishai\model\github\refractive_error\GHost\params_Ghostv3',
-                        f'ghostnet_v3_val_acc_{val_acc:.3f}_{avg_val_loss:.3f}_epoch{epoch}.plt'
+                        r'D:\shishai\model\github\refractive_error\classification\ResNet18\params',
+                        f'resnet_val_acc_{val_acc:.3f}_{avg_val_loss:.3f}_epoch{epoch}.plt'
                     )
                     torch.save(self.net.state_dict(), save_path_acc)
                     self.save_top_models(val_acc, save_path_acc)
 
                     print("val_acc model_copy is saved !")
 
+
 if __name__ == '__main__':
     t = Trainer(
         path=r"D:\shishai\NIRDatasets\datasets\dataset",
-        model=r'D:\shishai\model\ghostnet\params/model1_0_0.244140625_459.7992205619812.plt',
-        model_copy=r'./params/model1_{}_{}_{}.plt',
-        img_save_path=r'D:\shishai\UNet\train_img'
-    )
+        model=r'./params/ResNet18_5200_0.7633928571428571_23.444395065307617.plt',
+        model_copy=r'./params/fold/v8model_{}_{}_{}.plt',
+        img_save_path=r'D:\shishai\UNet\train_img')
     t.train(1000)
-

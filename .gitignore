@@ -21,3 +21,11 @@ GHost/params/ghostnet_gray_val_acc_0.693_0.148_epoch383.plt
 axis_prediction/__pycache__/model_ghostnet.cpython-39.pyc
 axis_prediction/__pycache__/datasets_gray.cpython-39.pyc
 axis_prediction/__pycache__/model_ghostnet.cpython-39.pyc
+*.pyc
+*.plt
+*.0
+*.iml
+*.xml
+*.iml
+*.iml
+*.pyc
